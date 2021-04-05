@@ -25,12 +25,14 @@ public class BookController {
     // Create a new Note
     @PostMapping("/books")
     public Book createNote(@Valid @RequestBody Book book) {
+        // TODO set https status code to 201
         return bookRepository.save(book);
     }
 
     // Get a Single Note
     @GetMapping("/books/{id}")
     public Book getNoteById(@PathVariable(value = "id") Long bookId) throws BookNotFoundException {
+        // TODO set https status code to 404 (?)
         return bookRepository.findById(bookId)
                 .orElseThrow(() -> new BookNotFoundException(bookId));
     }
