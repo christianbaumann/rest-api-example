@@ -1,0 +1,426 @@
+{
+	"info": {
+		"_postman_id": "44b8da6d-72c9-48fc-92e9-4b61e6436435",
+		"name": "rest-api-example",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "get books",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Status code is 200\", function () {\r",
+							"\tpm.response.to.have.status(200);\r",
+							"});\r",
+							"\r",
+							"pm.test(\"Response body does exist\", function () {\r",
+							"    pm.expect(pm.response.json()).to.not.eql(undefined)\r",
+							"});\r",
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://{{host}}:{{port}}/books",
+					"protocol": "http",
+					"host": [
+						"{{host}}"
+					],
+					"port": "{{port}}",
+					"path": [
+						"books"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "create book",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Status code is 200\", function () {\r",
+							"    pm.response.to.have.status(200);\r",
+							"});\r",
+							"\r",
+							"const resBody = pm.response.json();\r",
+							"\r",
+							"pm.test(\"Id exists\", function () {\r",
+							"    pm.expect(resBody).to.have.property('id');\r",
+							"});\r",
+							"\r",
+							"pm.test(\"Book name is correct\", function () {\r",
+							"    pm.expect(resBody.book_name).to.eql(pm.environment.get(\"bookName\"));\r",
+							"});\r",
+							"\r",
+							"pm.test(\"Author name is correct\", function () {\r",
+							"    pm.expect(resBody.author_name).to.eql(pm.environment.get(\"authorName\"));\r",
+							"});\r",
+							"\r",
+							"pm.test(\"ISBN is correct\", function () {\r",
+							"    pm.expect(resBody.isbn).to.eql(pm.environment.get(\"isbn\"));\r",
+							"});\r",
+							"\r",
+							"pm.environment.set(\"id\", resBody.id)\r",
+							"\r",
+							"pm.sendRequest({\r",
+							"    url: 'http://'+ pm.environment.get(\"host\") + ':' + pm.environment.get(\"port\") + '/books/' + pm.environment.get(\"id\"),\r",
+							"    method: 'GET'\r",
+							"}, function (err, res) {\r",
+							"    pm.environment.set(\"id\", res.json().id);\r",
+							"\r",
+							"    pm.test(\"Query new book: Status code is 200\", function () {       \r",
+							"        pm.expect(res).to.have.status(200);\r",
+							"    });\r",
+							"\r",
+							"    pm.test(\"Query new book: Id is correct\", function () {\r",
+							"\t\tpm.expect(res.json().id).to.eql(pm.environment.get(\"id\"));\r",
+							"\t});\r",
+							"\r",
+							"\tpm.test(\"Query new book: Book name is correct\", function () {\r",
+							"\t\tpm.expect(res.json().book_name).to.eql(pm.environment.get(\"bookName\"));\r",
+							"\t});\r",
+							"\r",
+							"\tpm.test(\"Query new book: Author name is correct\", function () {\r",
+							"\t\tpm.expect(res.json().author_name).to.eql(pm.environment.get(\"authorName\"));\r",
+							"\t});\r",
+							"\r",
+							"\tpm.test(\"Query new book: ISBN is correct\", function () {\r",
+							"\t\tpm.expect(res.json().isbn).to.eql(pm.environment.get(\"isbn\"));\r",
+							"\t});\r",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				},
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							"const bookName = pm.variables.replaceIn('{{$randomPhrase}}')\r",
+							"const authorName = pm.variables.replaceIn('{{$randomFirstName}}') + ' ' + pm.variables.replaceIn('{{$randomLastName}}')\r",
+							"const isbn = pm.variables.replaceIn('{{$randomAlphaNumeric}}') + pm.variables.replaceIn('{{$randomInt}}')\r",
+							"\r",
+							"pm.environment.set(\"bookName\", bookName)\r",
+							"pm.environment.set(\"authorName\", authorName)\r",
+							"pm.environment.set(\"isbn\", isbn)"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"book_name\" : \"{{bookName}}\",\r\n    \"author_name\" : \"{{authorName}}\",\r\n    \"isbn\" : \"{{isbn}}\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://{{host}}:{{port}}/books",
+					"protocol": "http",
+					"host": [
+						"{{host}}"
+					],
+					"port": "{{port}}",
+					"path": [
+						"books"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "get book",
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							"const bookName = pm.variables.replaceIn('{{$randomPhrase}}')\r",
+							"const authorName = pm.variables.replaceIn('{{$randomFirstName}}') + ' ' + pm.variables.replaceIn('{{$randomLastName}}')\r",
+							"const isbn = pm.variables.replaceIn('{{$randomAlphaNumeric}}') + pm.variables.replaceIn('{{$randomInt}}')\r",
+							"\r",
+							"pm.environment.set(\"bookName\", bookName)\r",
+							"pm.environment.set(\"authorName\", authorName)\r",
+							"pm.environment.set(\"isbn\", isbn)\r",
+							"\r",
+							"pm.sendRequest({\r",
+							"    url: 'http://'+ pm.environment.get(\"host\") + ':' + pm.environment.get(\"port\") + '/books',\r",
+							"    method: 'POST',\r",
+							"    header: 'Content-Type:application/json',\r",
+							"    body: {\r",
+							"        mode: 'raw',\r",
+							"        raw: JSON.stringify({\r",
+							"            book_name: pm.environment.get('bookName'), \r",
+							"            author_name: pm.environment.get('authorName'), \r",
+							"            isbn: pm.environment.get('isbn')\r",
+							"        })\r",
+							"    }\r",
+							"}, function (err, res) {\r",
+							"    pm.environment.set(\"id\", res.json().id);\r",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				},
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Status code is 200\", function () {\r",
+							"    pm.response.to.have.status(200);\r",
+							"});\r",
+							"\r",
+							"const resBody = pm.response.json();\r",
+							"\r",
+							"pm.test(\"Id is correct\", function () {\r",
+							"    pm.expect(resBody.id).to.eql(pm.environment.get(\"id\"));\r",
+							"});\r",
+							"\r",
+							"pm.test(\"Book name is correct\", function () {\r",
+							"    pm.expect(resBody.book_name).to.eql(pm.environment.get(\"bookName\"));\r",
+							"});\r",
+							"\r",
+							"pm.test(\"Author name is correct\", function () {\r",
+							"    pm.expect(resBody.author_name).to.eql(pm.environment.get(\"authorName\"));\r",
+							"});\r",
+							"\r",
+							"pm.test(\"ISBN is correct\", function () {\r",
+							"    pm.expect(resBody.isbn).to.eql(pm.environment.get(\"isbn\"));\r",
+							"});\r",
+							"\r",
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://{{host}}:{{port}}/books/{{id}}",
+					"protocol": "http",
+					"host": [
+						"{{host}}"
+					],
+					"port": "{{port}}",
+					"path": [
+						"books",
+						"{{id}}"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "update book",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Status code is 200\", function () {\r",
+							"    pm.response.to.have.status(200);\r",
+							"});\r",
+							"\r",
+							"const resBody = pm.response.json();\r",
+							"\r",
+							"pm.test(\"Id exists\", function () {\r",
+							"    pm.expect(resBody.id).to.eql(1);\r",
+							"});\r",
+							"\r",
+							"pm.test(\"Book name is correct\", function () {\r",
+							"    pm.expect(resBody.book_name).to.eql(pm.environment.get(\"bookName\"));\r",
+							"});\r",
+							"\r",
+							"pm.test(\"Author name is correct\", function () {\r",
+							"    pm.expect(resBody.author_name).to.eql(pm.environment.get(\"authorName\"));\r",
+							"});\r",
+							"\r",
+							"pm.test(\"ISBN is correct\", function () {\r",
+							"    pm.expect(resBody.isbn).to.eql(pm.environment.get(\"isbn\"));\r",
+							"});\r",
+							"\r",
+							"pm.sendRequest({\r",
+							"    url: 'http://'+ pm.environment.get(\"host\") + ':' + pm.environment.get(\"port\") + '/books/1',\r",
+							"    method: 'GET'\r",
+							"}, function (err, res) {\r",
+							"    pm.environment.set(\"id\", res.json().id);   \r",
+							"\r",
+							"    pm.test(\"Query updated book: Status code is 200\", function () {       \r",
+							"        pm.expect(res).to.have.status(200);\r",
+							"    });\r",
+							"    \r",
+							"    pm.test(\"Query updated book: Id is correct\", function () {\r",
+							"\t\tpm.expect(res.json().id).to.eql(1);\r",
+							"\t});\r",
+							"\r",
+							"\tpm.test(\"Query updated book: Book name is correct\", function () {\r",
+							"\t\tpm.expect(res.json().book_name).to.eql(pm.environment.get(\"bookName\"));\r",
+							"\t});\r",
+							"\r",
+							"\tpm.test(\"Query updated book: Author name is correct\", function () {\r",
+							"\t\tpm.expect(res.json().author_name).to.eql(pm.environment.get(\"authorName\"));\r",
+							"\t});\r",
+							"\r",
+							"\tpm.test(\"Query updated book: ISBN is correct\", function () {\r",
+							"\t\tpm.expect(res.json().isbn).to.eql(pm.environment.get(\"isbn\"));\r",
+							"\t});\r",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				},
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							"const bookName = pm.variables.replaceIn('{{$randomPhrase}}')\r",
+							"const authorName = pm.variables.replaceIn('{{$randomFirstName}}') + ' ' + pm.variables.replaceIn('{{$randomLastName}}')\r",
+							"const isbn = pm.variables.replaceIn('{{$randomAlphaNumeric}}') + pm.variables.replaceIn('{{$randomInt}}')\r",
+							"\r",
+							"pm.environment.set(\"bookName\", bookName)\r",
+							"pm.environment.set(\"authorName\", authorName)\r",
+							"pm.environment.set(\"isbn\", isbn)"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "PUT",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"book_name\" : \"{{bookName}}\",\r\n    \"author_name\" : \"{{authorName}}\",\r\n    \"isbn\" : \"{{isbn}}\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://{{host}}:{{port}}/books/1",
+					"protocol": "http",
+					"host": [
+						"{{host}}"
+					],
+					"port": "{{port}}",
+					"path": [
+						"books",
+						"1"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "delete book",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Status code is 200\", function () {\r",
+							"    pm.response.to.have.status(200);\r",
+							"});\r",
+							"\r",
+							"pm.test(\"Response body doesn't exist\", function () {\r",
+							"    pm.expect(pm.response.body).to.eql(undefined)\r",
+							"});\r",
+							"\r",
+							"pm.sendRequest({\r",
+							"    url: 'http://'+ pm.environment.get(\"host\") + ':' + pm.environment.get(\"port\") + '/books/' + pm.environment.get(\"id\"),\r",
+							"    method: 'GET'\r",
+							"}, function (err, res) {\r",
+							"    pm.test(\"Query deleted book: Status code is 500\", function () {       \r",
+							"        pm.expect(res).to.have.status(500);\r",
+							"    });\r",
+							"\r",
+							"    const expectedMessage = \"Book is not found with id : '\" + pm.environment.get(\"id\") + \"'\"\r",
+							"    pm.test(\"Query deleted book: Message is correct\", function () {\r",
+							"\t\tpm.expect(res.json().message).to.eql(expectedMessage);\r",
+							"\t});\r",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				},
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							"const bookName = pm.variables.replaceIn('{{$randomPhrase}}')\r",
+							"const authorName = pm.variables.replaceIn('{{$randomFirstName}}') + ' ' + pm.variables.replaceIn('{{$randomLastName}}')\r",
+							"const isbn = pm.variables.replaceIn('{{$randomAlphaNumeric}}') + pm.variables.replaceIn('{{$randomInt}}')\r",
+							"\r",
+							"pm.environment.set(\"bookName\", bookName)\r",
+							"pm.environment.set(\"authorName\", authorName)\r",
+							"pm.environment.set(\"isbn\", isbn)\r",
+							"\r",
+							"pm.sendRequest({\r",
+							"    url: 'http://'+ pm.environment.get(\"host\") + ':' + pm.environment.get(\"port\") + '/books',\r",
+							"    method: 'POST',\r",
+							"    header: 'Content-Type:application/json',\r",
+							"    body: {\r",
+							"        mode: 'raw',\r",
+							"        raw: JSON.stringify({\r",
+							"            book_name: pm.environment.get('bookName'), \r",
+							"            author_name: pm.environment.get('authorName'), \r",
+							"            isbn: pm.environment.get('isbn')\r",
+							"        })\r",
+							"    }\r",
+							"}, function (err, res) {\r",
+							"    pm.environment.set(\"id\", res.json().id);\r",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "DELETE",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"book_name\" : \"{{bookName}}\",\r\n    \"author_name\" : \"{{authorName}}\",\r\n    \"isbn\" : \"{{isbn}}\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://{{host}}:{{port}}/books/{{id}}",
+					"protocol": "http",
+					"host": [
+						"{{host}}"
+					],
+					"port": "{{port}}",
+					"path": [
+						"books",
+						"{{id}}"
+					]
+				}
+			},
+			"response": []
+		}
+	]
+}
