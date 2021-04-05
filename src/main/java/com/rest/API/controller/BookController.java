@@ -16,20 +16,20 @@ public class BookController {
     @Autowired
     BookRepository bookRepository;
 
-    // Get All Notes
+    // Get All Books
     @GetMapping("/books")
     public List<Book> getAllNotes() {
         return bookRepository.findAll();
     }
 
-    // Create a new Note
+    // Create a new Book
     @PostMapping("/books")
     public Book createNote(@Valid @RequestBody Book book) {
         // TODO set https status code to 201
         return bookRepository.save(book);
     }
 
-    // Get a Single Note
+    // Get a Single Book
     @GetMapping("/books/{id}")
     public Book getNoteById(@PathVariable(value = "id") Long bookId) throws BookNotFoundException {
         // TODO set https status code to 404 (?)
@@ -37,7 +37,7 @@ public class BookController {
                 .orElseThrow(() -> new BookNotFoundException(bookId));
     }
 
-    // Update a Note
+    // Update a Book
     @PutMapping("/books/{id}")
     public Book updateNote(@PathVariable(value = "id") Long bookId,
                            @Valid @RequestBody Book bookDetails) throws BookNotFoundException {
@@ -54,7 +54,7 @@ public class BookController {
         return updatedBook;
     }
 
-    // Delete a Note
+    // Delete a Book
     @DeleteMapping("/books/{id}")
     public ResponseEntity<?> deleteBook(@PathVariable(value = "id") Long bookId) throws BookNotFoundException {
         Book book = bookRepository.findById(bookId)
